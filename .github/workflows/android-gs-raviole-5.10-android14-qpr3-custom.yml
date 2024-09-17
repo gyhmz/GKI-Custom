@@ -58,7 +58,7 @@ jobs:
         git apply $GITHUB_WORKSPACE/gki-patch/patchs/a0aa446ca326b5d26ac1dec057efd8c07d2bcbff.patch
         git apply $GITHUB_WORKSPACE/gki-patch/patchs/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
         git apply $GITHUB_WORKSPACE/gki-patch/patchs/a.patch
-        git apply $GITHUB_WORKSPACE/gki-patch/patchs/596330385b5f8545be462be7889b640647b31610.patch
+        #git apply $GITHUB_WORKSPACE/gki-patch/patchs/596330385b5f8545be462be7889b640647b31610.patch
 
         cat ./arch/arm64/configs/gki_defconfig
 
