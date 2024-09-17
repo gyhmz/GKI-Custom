@@ -86,7 +86,12 @@ jobs:
         #wget https://dl.google.com/android/gki/gki-certified-boot-android12-5.10-${{ inputs.os_patch_level }}_r1.zip -O ./gki-kernel.zip
         #unzip -q ./gki-kernel.zip
         #rm ./gki-kernel.zip
-        cp cp $GITHUB_WORKSPACE/gki-patch/boot/raven.img $GITHUB_WORKSPACE/boot-5.10.img
+        #cp cp $GITHUB_WORKSPACE/gki-patch/boot/raven.img $GITHUB_WORKSPACE/boot-5.10.img
+        wget https://dl.google.com/dl/android/aosp/raven-ap2a.240905.003.f1-factory-c3298655.zip ./pixel.zip
+        unzip pixel.zip
+        ls
+        cd pixel
+        ls
         cd $GITHUB_WORKSPACE/android-kernel
         echo "Unpack boot"
         ./tools/mkbootimg/unpack_bootimg.py --boot_img $GITHUB_WORKSPACE/boot*.img
