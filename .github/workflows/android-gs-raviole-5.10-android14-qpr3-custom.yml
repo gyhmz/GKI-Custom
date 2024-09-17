@@ -86,6 +86,7 @@ jobs:
         mkdir output
         cp $OUTDIR/Image ./output/
         cp $OUTDIR/Image.lz4 ./output/
+        cp $OUTDIR/../aosp/defconfig ./output/
         cp $OUTDIR/Image ./
         gzip -n -k -f -9 Image >Image.gz
         
