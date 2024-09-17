@@ -79,7 +79,14 @@ jobs:
         ls $GITHUB_WORKSPACE/android-kernel/out/
         ls $GITHUB_WORKSPACE/android-kernel/
 
-
+        cd $GITHUB_WORKSPACE
+        OUTDIR=android-kernel/out/android13-5.10/dist
+        mkdir output
+        cp $OUTDIR/Image ./output/
+        cp $OUTDIR/Image.lz4 ./output/
+        cp $OUTDIR/Image ./
+        gzip -n -k -f -9 Image >Image.gz
+        
     - name: Upload Image and Image.gz and boot.img
       uses: actions/upload-artifact@v4
       with:
@@ -92,6 +99,14 @@ jobs:
       with:
         name: Imageout
         path: $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/dist/Image
+
+
+  
+    - name: Upload Image and Image.gz and boot.img
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image-${{ inputs.version_name }}
+        path: ./output/*
 
 
     - name: Prepare artifacts
