@@ -71,8 +71,11 @@ jobs:
         cd $GITHUB_WORKSPACE/android-kernel
         BUILD_CONFIG=aosp/build.config.gki.aarch64 build/config.sh savedefconfig
         LTO=thin BUILD_CONFIG=aosp/build.config.gki.aarch64 build/build.sh
+        echo aaaa
         ls $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/dist/
+        echo bbbb
         ls $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/
+        echo ccc
         ls $GITHUB_WORKSPACE/android-kernel/out/
         ls $GITHUB_WORKSPACE/android-kernel/
 
@@ -81,7 +84,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Image
-        path: $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/dist/*
+        path: $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/dist/Image
 
 
 
@@ -102,7 +105,7 @@ jobs:
         #unzip -q ./gki-kernel.zip
         #rm ./gki-kernel.zip
         #cp cp $GITHUB_WORKSPACE/gki-patch/boot/raven.img $GITHUB_WORKSPACE/boot-5.10.img
-        wget https://dl.google.com/dl/android/aosp/raven-ap2a.240905.003.f1-factory-c3298655.zip -O ./pixel.zip
+        #wget https://dl.google.com/dl/android/aosp/raven-ap2a.240905.003.f1-factory-c3298655.zip -O ./pixel.zip
         unzip pixel.zip
         ls
         cd pixel
