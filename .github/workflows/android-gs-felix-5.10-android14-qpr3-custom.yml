@@ -89,13 +89,7 @@ jobs:
         #tar -czvf ./output/archive.tar.gz $OUTDIR/../../
         cp $OUTDIR/../aosp/.config ./output/
 
-        wget https://raw.githubusercontent.com/moby/moby/master/contrib/check-config.sh
-        wget https://raw.githubusercontent.com/lxc/lxc/main/src/lxc/cmd/lxc-checkconfig.in
-        chmod +x check-config.sh
-        chmod +x lxc-checkconfig.in
 
-        CONFIG=$OUTDIR/../aosp/.config ./check-config.sh
-        CONFIG=$OUTDIR/../aosp/.config ./lxc-checkconfig.in
 
 
 
@@ -129,6 +123,13 @@ jobs:
         cd $GITHUB_WORKSPACE
         OUTDIR=android-kernel/out/android13-5.10/dist
         mkdir output
+        wget https://raw.githubusercontent.com/moby/moby/master/contrib/check-config.sh
+        wget https://raw.githubusercontent.com/lxc/lxc/main/src/lxc/cmd/lxc-checkconfig.in
+        chmod +x check-config.sh
+        chmod +x lxc-checkconfig.in
+
+        CONFIG=$OUTDIR/../aosp/.config ./check-config.sh
+        CONFIG=$OUTDIR/../aosp/.config ./lxc-checkconfig.in
         cp $OUTDIR/Image ./output/
         cp $OUTDIR/Image.lz4 ./output/
         cp $OUTDIR/Image ./
