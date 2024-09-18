@@ -1,0 +1,168 @@
+name: android-gs-felix-5.10-android14-qpr3-Custom
+
+on: 
+  workflow_dispatch:
+    inputs:
+      os_version:
+        required: true
+        type: string
+        description: >
+          OS Version of boot image
+          for example: 14.0.0
+      version_name:
+        required: true
+        type: string
+        description: >
+          With SUBLEVEL of kernel,
+          for example: android13-5.10.198
+      custom:
+        required: true
+        type: boolean
+        description: >
+          Enable LXC, Docker
+      kernelsu:
+        required: true
+        type: boolean
+        description: >
+          Enable KernelSU
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt install repo wget -y
+
+    - name: Sync the kernel source code
+      run: |
+        cd $GITHUB_WORKSPACE
+        mkdir android-kernel
+        cd android-kernel
+        repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b android-gs-felix-5.10-android14-qpr3
+        repo sync
+
+    - name: Apply patches and configuration files
+      if: ${{ inputs.custom == true }}
+      run: |
+        cd $GITHUB_WORKSPACE
+        git clone https://github.com/gyhmz/GKI-Custom.git gki-patch
+        #cp ./gki-patch/config/gki_defconfig-android-gs-raviole-5.10-android14-qpr3 ./android-kernel/aosp/arch/arm64/configs/gki_defconfig
+        cd ./android-kernel/aosp
+        
+        cat ./arch/arm64/configs/gki_defconfig
+        
+        git apply $GITHUB_WORKSPACE/gki-patch/patchs/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
+        git apply $GITHUB_WORKSPACE/gki-patch/patchs/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
+        git apply $GITHUB_WORKSPACE/gki-patch/patchs/750b43051d2e4317121c7250544ae38fdf28d4c7.patch
+        git apply $GITHUB_WORKSPACE/gki-patch/patchs/a0aa446ca326b5d26ac1dec057efd8c07d2bcbff.patch
+        git apply $GITHUB_WORKSPACE/gki-patch/patchs/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+        git apply $GITHUB_WORKSPACE/gki-patch/patchs/a.patch
+        #git apply $GITHUB_WORKSPACE/gki-patch/patchs/596330385b5f8545be462be7889b640647b31610.patch
+
+        cat ./arch/arm64/configs/gki_defconfig
+
+
+    - name: KernelSU
+      if: ${{ inputs.kernelsu == true }}
+      run: |
+          cd $GITHUB_WORKSPACE/android-kernel
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+
+    - name: Build Kernel
+      run: |
+        cd $GITHUB_WORKSPACE/android-kernel
+        BUILD_CONFIG=aosp/build.config.gki.aarch64 build/config.sh savedefconfig
+        LTO=thin BUILD_CONFIG=aosp/build.config.gki.aarch64 build/build.sh
+
+
+        cd $GITHUB_WORKSPACE
+        OUTDIR=android-kernel/out/android13-5.10/dist
+        mkdir output
+        cp $OUTDIR/Image ./output/
+        cp $OUTDIR/Image.lz4 ./output/
+        cp $OUTDIR/../aosp/defconfig ./output/
+        cp $OUTDIR/Image ./
+        #tar -czvf ./output/archive.tar.gz $OUTDIR/../../
+        cp $OUTDIR/../aosp/.config ./output/
+
+        wget https://raw.githubusercontent.com/moby/moby/master/contrib/check-config.sh
+        wget https://raw.githubusercontent.com/lxc/lxc/main/src/lxc/cmd/lxc-checkconfig.in
+        chmod +x check-config.sh
+        chmod +x lxc-checkconfig.in
+
+        CONFIG=$OUTDIR/../aosp/.config ./check-config.sh
+        CONFIG=$OUTDIR/../aosp/.config ./lxc-checkconfig.in
+
+
+
+        gzip -n -k -f -9 Image >Image.gz
+        
+    - name: Upload Image and Image.gz and boot.img
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image
+        path: $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/dist/Image
+
+
+    - name: Upload  image
+      uses: actions/upload-artifact@v3
+      with:
+        name: Imageout
+        path: $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/dist/Image
+
+
+  
+    - name: Upload Image and Image.gz and boot.img
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image-${{ inputs.version_name }}
+        path: ./output/*
+
+
+    - name: Prepare artifacts
+      id: prepareArtifacts
+      run: |
+        cd $GITHUB_WORKSPACE
+        OUTDIR=android-kernel/out/android13-5.10/dist
+        mkdir output
+        cp $OUTDIR/Image ./output/
+        cp $OUTDIR/Image.lz4 ./output/
+        cp $OUTDIR/Image ./
+        gzip -n -k -f -9 Image >Image.gz
+        git clone https://github.com/Kernel-SU/AnyKernel3
+        rm -rf ./AnyKernel3/.git
+        cp $OUTDIR/Image ./AnyKernel3/
+        #wget https://dl.google.com/android/gki/gki-certified-boot-android12-5.10-${{ inputs.os_patch_level }}_r1.zip -O ./gki-kernel.zip
+        #unzip -q ./gki-kernel.zip
+        #rm ./gki-kernel.zip
+        #cp cp $GITHUB_WORKSPACE/gki-patch/boot/raven.img $GITHUB_WORKSPACE/boot-5.10.img
+        #wget https://dl.google.com/dl/android/aosp/raven-ap2a.240905.003.f1-factory-c3298655.zip -O ./pixel.zip
+        unzip pixel.zip
+        ls
+        cd pixel
+        ls
+        cd $GITHUB_WORKSPACE/android-kernel
+        echo "Unpack boot"
+        ./tools/mkbootimg/unpack_bootimg.py --boot_img $GITHUB_WORKSPACE/boot*.img
+        echo "Build boot.img"
+        ./tools/mkbootimg/mkbootimg.py --header_version 4 --kernel out/android13-5.10/dist/Image --ramdisk out/ramdisk --os_version ${{ inputs.os_version }} -o $GITHUB_WORKSPACE/output/${{ inputs.version_name }}-boot.img
+        echo "Build boot-lz4.img"
+        ./tools/mkbootimg/mkbootimg.py --header_version 4 --kernel out/android13-5.10/dist/Image.lz4 --ramdisk out/ramdisk --os_version ${{ inputs.os_version }} -o $GITHUB_WORKSPACE/output/${{ inputs.version_name }}-boot-lz4.img
+        echo "Build boot-gz.img"
+        ./tools/mkbootimg/mkbootimg.py --header_version 4 --kernel $GITHUB_WORKSPACE/Image.gz --ramdisk out/ramdisk --os_version ${{ inputs.os_version }} -o $GITHUB_WORKSPACE/output/${{ inputs.version_name }}-boot-gz.img
+
+    - name: Upload Image and Image.gz and boot.img
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image-${{ inputs.version_name }}
+        path: ./output/*
+
+    - name: Upload AnyKernel3
+      uses: actions/upload-artifact@v4
+      with:
+        name: AnyKernel3-${{ inputs.version_name }}
+        path: ./AnyKernel3/*
