@@ -89,7 +89,15 @@ jobs:
         cp $OUTDIR/Image.lz4 ./output/
         cp $OUTDIR/../aosp/defconfig ./output/
         cp $OUTDIR/Image ./
-        tar -czvf ./output/archive.tar.gz $OUTDIR/../../
+        #tar -czvf ./output/archive.tar.gz $OUTDIR/../../
+        cp $OUTDIR/../aosp/.config ./output/
+
+        wget https://raw.githubusercontent.com/moby/moby/master/contrib/check-config.sh
+        wget https://raw.githubusercontent.com/lxc/lxc/main/src/lxc/cmd/lxc-checkconfig.in
+        CONFIG=$OUTDIR/../aosp/.config ./check-config.sh
+        CONFIG=$OUTDIR/../aosp/.config ./lxc-checkconfig.in
+
+
 
         gzip -n -k -f -9 Image >Image.gz
         
