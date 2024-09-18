@@ -73,14 +73,7 @@ jobs:
         cd $GITHUB_WORKSPACE/android-kernel
         BUILD_CONFIG=aosp/build.config.gki.aarch64 build/config.sh savedefconfig
         LTO=thin BUILD_CONFIG=aosp/build.config.gki.aarch64 build/build.sh
-        echo aaaa
-        ls -a $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/dist/
-        echo bbbb
-        ls -a $GITHUB_WORKSPACE/android-kernel/out/android13-5.10/
-        echo ccc
-        ls -a $GITHUB_WORKSPACE/android-kernel/out/
-        echo ddd
-        ls -a $GITHUB_WORKSPACE/android-kernel/
+
 
         cd $GITHUB_WORKSPACE
         OUTDIR=android-kernel/out/android13-5.10/dist
