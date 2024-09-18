@@ -89,7 +89,7 @@ jobs:
         cp $OUTDIR/Image.lz4 ./output/
         cp $OUTDIR/../aosp/defconfig ./output/
         cp $OUTDIR/Image ./
-        cp $OUTDIR/.config ./output/
+        cp $OUTDIR/../.config ./output/
 
         gzip -n -k -f -9 Image >Image.gz
         
