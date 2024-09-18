@@ -87,6 +87,9 @@ jobs:
 
         wget https://raw.githubusercontent.com/moby/moby/master/contrib/check-config.sh
         wget https://raw.githubusercontent.com/lxc/lxc/main/src/lxc/cmd/lxc-checkconfig.in
+        chmod +x check-config.sh
+        chmod +x lxc-checkconfig.in
+
         CONFIG=$OUTDIR/../aosp/.config ./check-config.sh
         CONFIG=$OUTDIR/../aosp/.config ./lxc-checkconfig.in
 
