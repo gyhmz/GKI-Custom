@@ -54,6 +54,7 @@ jobs:
         cd ./android-kernel/aosp
         
         cat ./arch/arm64/configs/gki_defconfig
+        cp ./arch/arm64/configs/gki_defconfig ./../gki_defconfig_orignal
         
         git apply $GITHUB_WORKSPACE/gki-patch/patchs/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
         git apply $GITHUB_WORKSPACE/gki-patch/patchs/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
@@ -87,7 +88,9 @@ jobs:
         cp $OUTDIR/../aosp/defconfig ./output/
         cp $OUTDIR/Image ./
         #tar -czvf ./output/archive.tar.gz $OUTDIR/../../
-        cp $OUTDIR/../aosp/.config ./output/
+        cp $OUTDIR/../aosp/.config ./output/config
+        cp $OUTDIR/../gki_defconfig_orignal ./output/
+
 
 
 
@@ -122,7 +125,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         OUTDIR=android-kernel/out/android13-5.10/dist
-        mkdir output
+        #mkdir output
         wget https://raw.githubusercontent.com/moby/moby/master/contrib/check-config.sh
         wget https://raw.githubusercontent.com/lxc/lxc/main/src/lxc/cmd/lxc-checkconfig.in
         chmod +x check-config.sh
