@@ -50,6 +50,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         git clone https://github.com/gyhmz/GKI-Custom.git gki-patch
+        cp ./android-kernel/aosp/arch/arm64/configs/gki_defconfig ./android-kernel/gki_defconfig_orignal
+        cp ./android-kernel/private/gs-google/arch/arm64/configs/gki_defconfig ./android-kernel/gki_defconfig_private_orignal
         cp ./gki-patch/config/gki_defconfig-android-gs-raviole-5.10-android14-qpr3 ./android-kernel/aosp/arch/arm64/configs/gki_defconfig
         cd ./android-kernel/aosp
         git apply $GITHUB_WORKSPACE/gki-patch/patchs/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
@@ -84,6 +86,8 @@ jobs:
         cp $OUTDIR/Image ./
         #tar -czvf ./output/archive.tar.gz $OUTDIR/../../
         cp $OUTDIR/../aosp/.config ./output/
+        cp $OUTDIR/../../../gki_defconfig_orignal ./output/
+        cp $OUTDIR/../../../gki_defconfig_private_orignal ./output/
 
 
 
