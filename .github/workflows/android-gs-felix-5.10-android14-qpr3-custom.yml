@@ -89,7 +89,7 @@ jobs:
         cp $OUTDIR/Image ./
         #tar -czvf ./output/archive.tar.gz $OUTDIR/../../
         cp $OUTDIR/../aosp/.config ./output/config
-        cp $OUTDIR/../gki_defconfig_orignal ./output/
+        cp $OUTDIR/../../../gki_defconfig_orignal ./output/
 
 
 
