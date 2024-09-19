@@ -118,7 +118,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         OUTDIR=android-kernel/out/android13-5.10/dist
-        mkdir output
+        #mkdir output
         wget https://raw.githubusercontent.com/moby/moby/master/contrib/check-config.sh
         wget https://raw.githubusercontent.com/lxc/lxc/main/src/lxc/cmd/lxc-checkconfig.in
         chmod +x check-config.sh
